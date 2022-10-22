@@ -26,8 +26,10 @@ export default class PVE extends Battle {
   }
 
   private _verifyBattle(): number | undefined {
-    if (!this._environments.every((env) => env.lifePoints < 0)) return 0;
     const endLoop = this._environments.length + 1;
+    
+    if (!this._environments.every((env) => env.lifePoints < 0)) return endLoop;
     if (this.player.lifePoints < 0) return endLoop;
+    return 0;
   }
 }
