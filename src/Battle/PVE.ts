@@ -1,6 +1,5 @@
-import Fighter, { SimpleFighter } from "../Fighter";
-import Monster from "../Monster";
-import Battle from "./Battle";
+import Fighter, { SimpleFighter } from '../Fighter';
+import Battle from './Battle';
 
 export default class PVE extends Battle {
   private _environments: (Fighter | SimpleFighter)[];
@@ -11,15 +10,24 @@ export default class PVE extends Battle {
   }
 
   fight(): number {
-    for(let i = 0; i < this._environments.length; i += 1) {
+    this._battleTurn();
+    return this.player.lifePoints === -1 ? -1 : 1;
+  }
+
+  private _battleTurn() {
+    for (let i = 0; i < this._environments.length; i += 1) {
       this.player.attack(this._environments[i]);
       this._environments.forEach((env) => {
-      if (env.lifePoints > 0) env.attack(this.player);
+        if (env.lifePoints > 0) env.attack(this.player);
       });
       
-      if (!this._environments.every((env) => env.lifePoints < 0)) i = 0;
-      if (this.player.lifePoints < 0) break;
+      i = this._verifyBattle() as number;
     }
-    return this.player.lifePoints === -1 ? -1 : 1;
+  }
+
+  private _verifyBattle(): number | undefined {
+    if (!this._environments.every((env) => env.lifePoints < 0)) return 0;
+    const endLoop = this._environments.length + 1;
+    if (this.player.lifePoints < 0) return endLoop;
   }
 }
